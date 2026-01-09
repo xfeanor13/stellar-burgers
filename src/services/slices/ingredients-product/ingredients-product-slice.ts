@@ -1,5 +1,5 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit';
-import { fetchIngredients } from '@thunks/ingredients-product';
+import { fetchIngredients } from '../../thunks/ingredients-product';
 import { TIngredient } from 'types';
 
 export interface IIngredientsResponse {
@@ -13,7 +13,7 @@ export interface IIngredientsState {
   error: string | null;
 }
 
-const initialState: IIngredientsState = {
+export const initialState: IIngredientsState = {
   items: [],
   loading: false,
   error: null

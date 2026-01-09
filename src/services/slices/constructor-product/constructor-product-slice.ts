@@ -3,15 +3,13 @@ import { TIngredient, TConstructorIngredient } from 'types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface IConstructorProductState {
-  bun: TIngredient | null;
+  bun: TConstructorIngredient | null;
   ingredients: TConstructorIngredient[];
-  total: number;
 }
 
-const initialState: IConstructorProductState = {
+export const initialState: IConstructorProductState = {
   bun: null,
-  ingredients: [],
-  total: 0
+  ingredients: []
 };
 
 // слайс конструктора
@@ -22,7 +20,7 @@ export const constructorProductSlice = createSlice({
     addIngredient: {
       reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
         if (action.payload.type === 'bun') {
-          state.bun = action.payload;
+          state.bun = action.payload as TConstructorIngredient;
         } else {
           state.ingredients.push(action.payload);
         }

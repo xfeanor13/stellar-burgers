@@ -1,5 +1,5 @@
 import { createSlice, isPending, isRejected } from '@reduxjs/toolkit';
-import { getFeeds } from '@thunks/feed';
+import { getFeeds } from '@thunks/feed/index';
 import { TOrder } from 'types';
 
 interface IFeedState {
@@ -10,7 +10,7 @@ interface IFeedState {
   error: string | null;
 }
 
-const initialState: IFeedState = {
+export const initialState: IFeedState = {
   orders: [],
   total: 0,
   totalToday: 0,
@@ -30,17 +30,13 @@ const feedSlice = createSlice({
         state.totalToday = action.payload.totalToday;
         state.loading = false;
       })
-      .addMatcher(isPending, (state, action) => {
-        if (action.type === getFeeds.pending.type) {
-          state.loading = true;
-          state.error = null;
-        }
+      .addCase(getFeeds.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
-      .addMatcher(isRejected, (state, action) => {
-        if (action.type === getFeeds.rejected.type) {
-          state.loading = false;
-          state.error = action.payload as string;
-        }
+      .addCase(getFeeds.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   }
 });

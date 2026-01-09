@@ -10,7 +10,7 @@ interface IOrdersState {
   orderModalData: TOrder | null;
 }
 
-const initialState: IOrdersState = {
+export const initialState: IOrdersState = {
   userOrders: [],
   loading: false,
   error: null,
@@ -28,39 +28,47 @@ const ordersSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(getUserOrders.fulfilled, (state, action) => {
-        state.userOrders = action.payload;
-        state.loading = false;
-      })
-      .addCase(createOrder.fulfilled, (state, action) => {
-        state.orderRequest = false;
-        state.orderModalData = action.payload;
-      })
-      .addCase(getOrderByNumber.fulfilled, (state, action) => {
-        state.orderModalData = action.payload;
-        state.loading = false;
-      })
-      .addMatcher(isPending, (state, action) => {
-        //собираю в один несколько addCase
-        if (action.type.startsWith('orders/createOrder')) {
-          state.orderRequest = true;
-          state.error = null;
-        } else if (action.type === getUserOrders.pending.type) {
-          state.loading = true;
-          state.error = null;
-        }
-      })
-      .addMatcher(isRejected, (state, action) => {
-        //собираю в один несколько addCase
-        if (action.type.startsWith('orders/createOrder')) {
-          state.orderRequest = false;
-          state.error = action.payload as string;
-        } else if (action.type === getUserOrders.rejected.type) {
-          state.loading = false;
-          state.error = action.payload as string;
-        }
-      });
+    // Обработка загрузки списка заказов пользователя
+    builder.addCase(getUserOrders.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(getUserOrders.fulfilled, (state, action) => {
+      state.userOrders = action.payload;
+      state.loading = false;
+    });
+    builder.addCase(getUserOrders.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // Обработка создания заказа
+    builder.addCase(createOrder.pending, (state) => {
+      state.orderRequest = true;
+      state.error = null;
+    });
+    builder.addCase(createOrder.fulfilled, (state, action) => {
+      state.orderRequest = false;
+      state.orderModalData = action.payload;
+    });
+    builder.addCase(createOrder.rejected, (state, action) => {
+      state.orderRequest = false;
+      state.error = action.payload as string;
+    });
+
+    // Обработка получения заказа по номеру
+    builder.addCase(getOrderByNumber.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(getOrderByNumber.fulfilled, (state, action) => {
+      state.orderModalData = action.payload;
+      state.loading = false;
+    });
+    builder.addCase(getOrderByNumber.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
   }
 });
 
